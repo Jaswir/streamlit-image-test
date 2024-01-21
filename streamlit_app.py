@@ -1,50 +1,41 @@
 
 import streamlit as st
+import os
+import streamlit as st
+from streamlit_javascript import st_javascript
+from PIL import Image
+import re
+from io import BytesIO
 
-st.write(
-    f'<span style="font-size: 78px; line-height: 1">🐱</span>',
-    unsafe_allow_html=True,
-)
+import image_to_code
+import script_to_image
 
-"""
-# Static file serving
-"""
+import streamlit as st
 
-st.caption(
-    "[Code for this demo](https://github.com/streamlit/static-file-serving-demo/blob/main/streamlit_app.py)"
-)
 
-"""
-Streamlit 1.18 allows you to serve small, static media files via URL. 
-
-## Instructions
-
-- Create a folder `static` in your app's root directory.
-- Place your files in the `static` folder.
-- Add the following to your `config.toml` file:
-
-```toml
-[server]
-enableStaticServing = true
-```
-
-You can then access the files on `<your-app-url>/app/static/<filename>`. Read more in our 
-[docs](https://docs.streamlit.io/library/advanced-features/static-file-serving).
-
-## Examples
-
-You can use this feature with `st.markdown` to put a link on an image:
-"""
-
-with st.echo():
-    st.markdown("[![Click me](./app/static/cat.jpg)](https://streamlit.io)")
-
-"""
-Or you can use images in HTML or SVG:
-"""
+#Or you can use images in HTML or SVG:
 
 with st.echo():
     st.markdown(
         '<img src="./app/static/twitter-icon.png" height="333" style="border: 5px solid orange">',
         unsafe_allow_html=True,
+    )
+
+window_width = st_javascript("window.innerWidth")
+
+file_path_html = "./my_website/index.html"
+file_path_css = "./my_website/styles.css"
+
+if os.path.exists(file_path_html) and os.path.exists(file_path_css):
+    with open(file_path_html, "r", encoding="utf8") as file:
+        html_string = file.read()
+    with open(file_path_css, "r", encoding="utf8") as file:
+        css_string = "<style>" + file.read() + "</style>"
+
+    html_plus_css = re.sub(r"<link.*?css.*?>", css_string, html_string)
+
+    st.components.v1.html(
+        html_plus_css,
+        width=window_width,
+        height=window_width / 16 * 9,
     )
